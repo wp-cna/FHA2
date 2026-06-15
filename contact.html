@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — The Fisher Hill Association</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<aside class="side">
+  <a class="side-brand" href="index.html">The<br>Fisher&nbsp;Hill<br>Association</a>
+  <div class="side-rule"></div>
+  <nav class="side-nav" aria-label="Main">
+    <a href="posts.html">Neighborhood Posts</a>
+    <a href="events.html">Events</a>
+    <a href="agendas.html">Agendas</a>
+    <a href="about.html">About</a>
+    <a href="join.html">Join the FHA</a>
+    <a href="contact.html" class="active" aria-current="page">Contact</a>
+  </nav>
+  <div class="side-foot">Fisher Hill · White Plains, NY<br>A neighborhood association.</div>
+</aside>
+
+<main class="main">
+  <div class="page-hero" style="background-image:url('assets/heroes/contact.jpg')">
+    <div class="page-hero-label">Contact</div>
+  </div>
+  <div class="wrap">
+    <section>
+      <h1 class="title">Reach the board.</h1>
+      <p class="lede">Questions, posts, or membership? Send the Fisher Hill Association a note and someone will get back to you.</p>
+      <!-- TODO: wire form submission to a backend/form service that emails michael@mdalton.com -->
+      <form class="cform" id="contact-form" novalidate>
+        <div>
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div>
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div>
+          <label for="cf-subject">Subject</label>
+          <input id="cf-subject" name="subject" type="text" autocomplete="off">
+        </div>
+        <div>
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required></textarea>
+        </div>
+        <button class="btn" type="submit">Send message</button>
+        <p class="cform-status" id="cf-status" role="status" hidden></p>
+        <p class="cform-note">Messages go to the Fisher Hill Association board.</p>
+      </form>
+    </section>
+    <div class="foot">The Fisher Hill Association · White Plains, NY · <a href="credits.html">Image credits</a></div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var f=document.getElementById('contact-form');
+  if(!f) return;
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(!f.checkValidity()){ f.reportValidity(); return; }
+    var s=document.getElementById('cf-status');
+    s.hidden=false; s.textContent='Thanks — your message has been sent. The board will be in touch.';
+    f.reset();
+  });
+})();
+</script>
+<script src="i18n.js"></script>
+</body>
+</html>

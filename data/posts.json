@@ -1,0 +1,28 @@
+{
+  "updated": "2026-06-15",
+  "note": "Community postings serving Fisher Hill. Reviewed before posting.",
+  "posts": [
+    {
+      "title": "Walworth Avenue Block Party",
+      "category": "Neighborhood Event",
+      "fh": true,
+      "date": "2026-06-20",
+      "dateLabel": "June 20, 2026",
+      "time": "1:00 PM – 6:00 PM",
+      "location": "Walworth Avenue (Tibbits to Rochambeau)",
+      "summary": "Fisher Hill's annual block party returns — food, music, a kids' zone, and a meet-your-neighbors table. Street closed to traffic.",
+      "source": "Fisher Hill Association"
+    },
+    {
+      "title": "Fisher Hill Spring Cleanup Walk",
+      "category": "Volunteer",
+      "fh": true,
+      "date": "2026-06-27",
+      "dateLabel": "June 27, 2026",
+      "time": "9:00 AM – 11:30 AM",
+      "location": "Fisher Hill Greenway Entrance",
+      "summary": "Help clear litter, open walking paths, and prepare planting beds along the neighborhood greenway. Gloves and supplies provided.",
+      "source": "Fisher Hill Association"
+    }
+  ]
+}
