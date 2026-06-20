@@ -217,9 +217,16 @@ const BRAND = "#7c3aed";
     ? [ Cesium.CameraEventType.LEFT_DRAG ]
     : [ Cesium.CameraEventType.RIGHT_DRAG, { eventType: Cesium.CameraEventType.LEFT_DRAG, modifier: Cesium.KeyboardEventModifier.SHIFT } ];
 
-  // Centre we rotate/tilt around (the neighborhood) — used by the on-screen buttons and keys.
-  const ORBIT_CENTER = Cesium.Cartesian3.fromDegrees(-73.7787, 41.0228, 50);
+  // Point we rotate/tilt around. Starts at the neighborhood centre, but is re-set to
+  // whatever the default view is actually looking at (see setPivotFromView), so the first
+  // drag rotates around the current framing instead of snapping the camera elsewhere.
+  var ORBIT_CENTER = Cesium.Cartesian3.fromDegrees(-73.7787, 41.0228, 50);
   const MIN_PITCH = Cesium.Math.toRadians(-85), MAX_PITCH = Cesium.Math.toRadians(-6);
+  function setPivotFromView(){
+    var c = new Cesium.Cartesian2(scene.canvas.clientWidth / 2, scene.canvas.clientHeight / 2);
+    var p = viewer.camera.pickEllipsoid(c, Cesium.Ellipsoid.WGS84);
+    if(p) ORBIT_CENTER = p;   // keep the previous pivot if the centre is off-globe (sky)
+  }
 
   // Press "c" to copy the current camera as the default CAM config (for tuning the hero view).
   document.addEventListener("keydown", function(e){
@@ -240,6 +247,7 @@ const BRAND = "#7c3aed";
       destination: Cesium.Cartesian3.fromDegrees(CAM.lng, CAM.lat, CAM.height),
       orientation: { heading: Cesium.Math.toRadians(CAM.heading), pitch: Cesium.Math.toRadians(CAM.pitch), roll:0 }
     });
+    setPivotFromView();   // orbit around what we're looking at, so the first drag doesn't snap
   }
   setDefaultView();
 
