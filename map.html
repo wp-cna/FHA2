@@ -222,10 +222,14 @@ const BRAND = "#7c3aed";
   // drag rotates around the current framing instead of snapping the camera elsewhere.
   var ORBIT_CENTER = Cesium.Cartesian3.fromDegrees(-73.7787, 41.0228, 50);
   const MIN_PITCH = Cesium.Math.toRadians(-85), MAX_PITCH = Cesium.Math.toRadians(-6);
-  function setPivotFromView(){
-    var c = new Cesium.Cartesian2(scene.canvas.clientWidth / 2, scene.canvas.clientHeight / 2);
-    var p = viewer.camera.pickEllipsoid(c, Cesium.Ellipsoid.WGS84);
-    if(p) ORBIT_CENTER = p;   // keep the previous pivot if the centre is off-globe (sky)
+  function setPivotFromView(pos){
+    // Pivot around whatever is actually on screen (the cursor point, or the view centre).
+    // pickPosition uses the real 3D-tile surface; fall back to the ellipsoid, then keep prior.
+    var c = pos || new Cesium.Cartesian2(scene.canvas.clientWidth / 2, scene.canvas.clientHeight / 2);
+    var p;
+    try { if(scene.pickPositionSupported) p = scene.pickPosition(c); } catch(e){}
+    if(!Cesium.defined(p)) p = viewer.camera.pickEllipsoid(c, Cesium.Ellipsoid.WGS84);
+    if(Cesium.defined(p)) ORBIT_CENTER = p;
   }
 
   // Press "c" to copy the current camera as the default CAM config (for tuning the hero view).
@@ -272,7 +276,7 @@ const BRAND = "#7c3aed";
   scene.canvas.addEventListener("contextmenu", function(e){ e.preventDefault(); });
   if(!isTouch){
     var dragH = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-    dragH.setInputAction(function(e){ if(!shiftHeld){ sDrag = true; sX = e.position.x; sY = e.position.y; } }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+    dragH.setInputAction(function(e){ if(!shiftHeld){ sDrag = true; sX = e.position.x; sY = e.position.y; setPivotFromView(e.position); } }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
     dragH.setInputAction(function(){ sDrag = false; }, Cesium.ScreenSpaceEventType.LEFT_UP);
     dragH.setInputAction(function(e){
       if(!sDrag || shiftHeld) return;
@@ -287,7 +291,7 @@ const BRAND = "#7c3aed";
   function bindHold(sel, fn){
     var el = document.querySelector(sel); if(!el) return;
     var timer = null;
-    function start(ev){ ev.preventDefault(); if(timer) return; fn(); scene.requestRender(); timer = setInterval(function(){ fn(); scene.requestRender(); }, 45); }
+    function start(ev){ ev.preventDefault(); if(timer) return; setPivotFromView(); fn(); scene.requestRender(); timer = setInterval(function(){ fn(); scene.requestRender(); }, 45); }
     function stop(){ if(timer){ clearInterval(timer); timer = null; } }
     el.addEventListener("mousedown", start);
     el.addEventListener("touchstart", start, { passive:false });
