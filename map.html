@@ -169,7 +169,7 @@ const FH_BOUNDARY = [
 /* Default hero camera — a wide, oblique bird's-eye overview: the whole Fisher Hill
    boundary in frame with downtown White Plains reading in the distance to the upper-right.
    Not a tight detail. To re-tune in the browser, frame it and press "c" to copy a new CAM. */
-const CAM = { lat:40.99900, lng:-73.78450, height:2550, heading:25, pitch:-33 };
+const CAM = { lat:40.99150, lng:-73.78250, height:2300, heading:23, pitch:-35 };
 const BRAND = "#7c3aed";
 
 (function(){
@@ -232,18 +232,36 @@ const BRAND = "#7c3aed";
     if(Cesium.defined(p)) ORBIT_CENTER = p;
   }
 
-  // Press "c" to copy the current camera as the default CAM config (for tuning the hero view).
-  document.addEventListener("keydown", function(e){
-    if((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey){
-      var cg = viewer.camera.positionCartographic;
-      var cfg = "const CAM = { lat:" + Cesium.Math.toDegrees(cg.latitude).toFixed(5) +
-        ", lng:" + Cesium.Math.toDegrees(cg.longitude).toFixed(5) +
-        ", height:" + Math.round(cg.height) +
-        ", heading:" + Cesium.Math.toDegrees(viewer.camera.heading).toFixed(1) +
-        ", pitch:" + Cesium.Math.toDegrees(viewer.camera.pitch).toFixed(1) + " };";
-      if(navigator.clipboard) navigator.clipboard.writeText(cfg);
-      if(window.console) console.log("Copied → " + cfg);
+  // Capture the current camera as a CAM config line, for tuning the default hero view.
+  // Three ways to read it: press "c", or run fhCam() in the console, or read the on-screen
+  // box that appears. It's shown on the map (selectable), copied to the clipboard when the
+  // browser allows it, and logged to the console — so at least one path always works.
+  function camString(){
+    var cg = viewer.camera.positionCartographic;
+    return "const CAM = { lat:" + Cesium.Math.toDegrees(cg.latitude).toFixed(5) +
+      ", lng:" + Cesium.Math.toDegrees(cg.longitude).toFixed(5) +
+      ", height:" + Math.round(cg.height) +
+      ", heading:" + Cesium.Math.toDegrees(viewer.camera.heading).toFixed(1) +
+      ", pitch:" + Cesium.Math.toDegrees(viewer.camera.pitch).toFixed(1) + " };";
+  }
+  var camBox;
+  function captureCam(){
+    var cfg = camString();
+    if(!camBox){
+      camBox = document.createElement("div");
+      camBox.style.cssText = "position:absolute;left:10px;bottom:10px;z-index:9;background:rgba(0,0,0,.82);" +
+        "color:#fff;font:12px/1.45 ui-monospace,Menlo,monospace;padding:9px 11px;border-radius:6px;" +
+        "max-width:92%;user-select:all;-webkit-user-select:all;";
+      (document.querySelector(".fh-hero") || document.body).appendChild(camBox);
     }
+    camBox.textContent = cfg;
+    try { if(navigator.clipboard) navigator.clipboard.writeText(cfg); } catch(e){}
+    if(window.console) console.log("Copied → " + cfg);
+    return cfg;
+  }
+  window.fhCam = captureCam;
+  document.addEventListener("keydown", function(e){
+    if((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey) captureCam();
   });
 
   function setDefaultView(){
